@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Our Awesome Friend Group!</title>
+    <!-- Tailwind CSS CDN for easy styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Custom styles for a playful look */
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(
+          135deg,
+          #fce0e0 0%,
+          #e0f2f7 100%
+        ); /* Soft, playful gradient */
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .friend-card {
+        background-color: #ffffff; /* White background for cards */
+        border-radius: 20px; /* More rounded corners */
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Softer shadow */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden; /* Ensures image corners are rounded with card */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding-bottom: 1.5rem; /* Padding at the bottom of the card */
+        /* Removed cursor: pointer from card, now on image */
+      }
+      .friend-card:hover {
+        transform: translateY(-8px) scale(1.02); /* Slight lift and scale on hover */
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15); /* More prominent shadow on hover */
+      }
+      .friend-image-wrapper {
+        width: 100%;
+        height: 200px; /* Fixed height for image area */
+        background-color: #f0f0f0; /* Placeholder background */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+      .friend-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Cover the area, cropping if necessary */
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        cursor: pointer; /* Indicate that the image is clickable */
+      }
+      .funny-title {
+        color: #ef4444; /* A fun, vibrant red */
+        font-weight: bold;
+        font-size: 1.15rem; /* Slightly larger for emphasis */
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+      }
+      .friend-name {
+        color: #2563eb; /* A nice blue */
+        font-size: 1.75rem; /* Larger font for names */
+        font-weight: 800; /* Extra bold */
+        margin-bottom: 0.5rem;
+      }
+      /* Responsive adjustments for header */
+      @media (max-width: 640px) {
+        h1 {
+          font-size: 2.5rem; /* Adjust header size for small screens */
+        }
+      }
+
+      /* Detail page styles */
+      .detail-page {
+        background-color: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        padding: 2rem;
+        max-width: 700px; /* Max width for the detail page */
+        width: 95%; /* Responsive width */
+        display: none; /* Hidden by default */
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .detail-image {
+        width: 250px; /* Larger image for detail */
+        height: 250px;
+        border-radius: 50%; /* Circular image */
+        object-fit: cover;
+        border: 5px solid #a78bfa; /* Fun border around image */
+        margin-bottom: 1.5rem;
+      }
+      .back-button {
+        background-color: #6366f1; /* Indigo color */
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 9999px; /* Fully rounded button */
+        font-weight: bold;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        margin-top: 2rem;
+      }
+      .back-button:hover {
+        background-color: #4338ca; /* Darker indigo on hover */
+        transform: translateY(-2px);
+      }
+    </style>
+  </head>
+  <body class="p-4">
+    <div class="max-w-7xl mx-auto w-full">
+      <header class="text-center mb-12">
+        <h1 class="text-5xl font-extrabold text-purple-700 leading-tight mb-4">
+          LORDS OF CU SHAH
+        </h1>
+        <p class="text-gray-600 text-xl uppercase">
+          sparrow can never be a falcon 🦅
+        </p>
+      </header>
+
+      <!-- Main Friends Grid Container -->
+      <div
+        id="friends-container"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+      >
+        <!-- Friend cards will be inserted here by JavaScript -->
+      </div>
+
+      <!-- Friend Detail Page (Initially hidden) -->
+      <div id="friend-detail-page" class="detail-page">
+        <img
+          id="detail-image"
+          src=""
+          alt="Friend's Photo"
+          class="detail-image"
+        />
+        <p id="detail-funny-title" class="funny-title text-2xl"></p>
+        <h2 id="detail-name" class="friend-name text-4xl mb-4"></h2>
+        <p
+          id="detail-story"
+          class="text-gray-700 leading-relaxed text-lg mb-4"
+        ></p>
+        <button onclick="hideFriendDetail()" class="back-button">
+          ← Back to Lords
+        </button>
+      </div>
+
+      <footer class="text-center mt-12 py-4 text-gray-600 text-sm">
+        <p>
+          &copy; {new Date().getFullYear()} Our Awesome Friend Group. All rights
+          reserved.
+        </p>
+        <p>Made with fun and friendship!</p>
+      </footer>
+    </div>
+
+    <script>
+      // Define the mapping for uploaded image URLs (kept for reference)
+      const imageUrls =
+        typeof __image_url_mapping__ !== "undefined"
+          ? __image_url_mapping__
+          : {};
+
+      // --- FRIEND DATA ---
+      // Each friend now has a 'story' property!
+      const friendsData = [
+        {
+          id: "harsh", // Unique ID for each friend
+          name: "Harsh 'The Big Daddy'",
+          title: "Supreme Leader",
+          // Using a reliable placeholder for Harsh's image for now.
+          // Replace this with a direct public URL to YOUR actual image for Harsh:
+          image: "https://placehold.co/400x300/a78bfa/ffffff?text=Harsh", // Example: "https://your-image-host.com/harsh.jpg"
+          story:
+            "હર્ષ, જેને બધા “બિગ ડેડી” કહે છે, અમારા ગ્રુપનો સૌથી આકર્ષક અને સ્ટાઇલિશ મિત્ર છે. તેની લૂક્સ તો એકદમ ગ્રીક દેવ જેવા છે—જિમમાં સતત મહેનત કરીને તેણે એવું શરીર બનાવ્યું છે કે જોવો હોય તો લાગે કે કોઈ ઓલિમ્પિયન ગોડ છે! હર્ષની આ બોડી જોઈને બધા કહે છે કે એ તો વાસ્તવમાં કોઈ ગ્રીક દેવતાનો અવતાર છે.\nપણ આ બધા ગુણ હોવા છતાં હર્ષને ગર્લફ્રેન્ડ મળવાની તો બાકી જ છે! ગ્રુપમાં બધા હસતાં કહે છે કે “બિગ ડેડી” હોવા છતાં હર્ષ હજુ પણ પ્રેમના મામલામાં “સ્ટાર્ટર પેક” પર જ છે. એટલે કે, ગ્રીક દેવતાની બોડી અને ગ્રેડ્સ તો છે, પણ પ્રેમમાં હર્ષ હજુ પણ “લવ લર્નર” જ રહ્યો છે!",
+        },
+        {
+          id: "naman", // Changed ID to 'naman' to reflect new name
+          name: "Naman",
+          title: "Naman the Bomber", // Updated title
+          image: "https://placehold.co/400x300/fca5a5/ffffff?text=Naman", // Replace with Naman's image URL
+          story:
+            "નમન, જેને 'નમન ધ બોમ્બર' ના નામથી ઓળખવામાં આવે છે, તે અમારા ગ્રુપનો સૌથી ખતરનાક સભ્ય છે. તેની પાસે એવી ગુપ્ત કુશળતાઓ છે જે કોઈને ખબર નથી. તે શાંત અને મિલનસાર લાગે છે, પણ જ્યારે જરૂર પડે ત્યારે તેની છુપાયેલી શક્તિઓનો પરચો જોવા મળે છે. તેના રહસ્યમય કૌશલ્યોને કારણે તે ગ્રુપમાં હંમેશા એક પગલું આગળ રહે છે. કોઈને ખબર નથી કે તેના ખિસ્સામાં શું છુપાયેલું છે, અને આ જ વાત તેને સૌથી અનોખો અને જોખમી બનાવે છે!",
+        },
+        {
+          id: "vivek",
+          name: "Vivek",
+          title: "Chut Paglu",
+          image: "https://placehold.co/400x300/93c5fd/ffffff?text=Vivek", // Replace with Vivek's image URL
+          story:
+            "વિવેક, અમારા ગ્રુપનો “છુટ પાગલુ”, જેને પ્રેમમાં ક્યારેય સફળતા નથી મળી. બિચારો જ્યાં જાય ત્યાં પ્રેમનો ભૂખ્યો રહે છે, પણ તેની અલ્પ ઊંચાઈને કારણે છોકરીઓ તેને હંમેશા “નાનો પેકેજ” કહીને પાછો મોકલે છે.",
+        },
+        {
+          id: "om",
+          name: "OM",
+          title: "Om the Takoo",
+          image: "https://placehold.co/400x300/86efac/ffffff?text=OM", // Replace with Om's image URL
+          story:
+            "ઓમ, અમારા ગ્રુપનો “ટકલો નો બાદશાહ” છે! તેને ગર્વ છે કે તે ટકલા લોકોનો રાજા છે, પણ ironic વાત એ છે કે, તેને ક્યારેય કોઈ છોકરી સાથે સેટિંગ થતું નથી. એકવાર તેને એક નાની ઊંચાઈ વાળી છોકરી ગમતી હતી, પણ તેની બાલદાવતને કારણે કે શું ખબર, તે છોકરી તેને છોડીને બીજા છોકરા રુત્વિક સાથે ભાગી ગઈ!",
+        },
+      ];
+
+      // Get references to main containers and detail elements
+      const friendsContainer = document.getElementById("friends-container");
+      const friendDetailPage = document.getElementById("friend-detail-page");
+      const detailImage = document.getElementById("detail-image");
+      const detailFunnyTitle = document.getElementById("detail-funny-title");
+      const detailName = document.getElementById("detail-name");
+      const detailStory = document.getElementById("detail-story");
+
+      // Function to render friend cards
+      function renderFriends() {
+        friendsContainer.innerHTML = ""; // Clear existing content
+        friendsData.forEach((friend) => {
+          // Create the main card div
+          const card = document.createElement("div");
+          card.classList.add("friend-card", "p-6", "relative");
+          // Removed data-id and onclick from card itself
+
+          // Create image wrapper for consistent image size
+          const imageWrapper = document.createElement("div");
+          imageWrapper.classList.add("friend-image-wrapper");
+
+          // Create the image element
+          const img = document.createElement("img");
+          img.src = friend.image;
+          img.alt = `Photo of ${friend.name}`;
+          img.classList.add("friend-image");
+          img.onclick = () => showFriendDetail(friend.id); // Add click event to the image
+          // Fallback for broken images
+          img.onerror = function () {
+            this.src = `https://placehold.co/400x300/cccccc/000000?text=No+Image`;
+            this.alt = `Image not available for ${friend.name}`;
+          };
+          imageWrapper.appendChild(img);
+          card.appendChild(imageWrapper);
+
+          // Create and append the funny title
+          const title = document.createElement("p");
+          title.classList.add("funny-title");
+          title.textContent = friend.title;
+          card.appendChild(title);
+
+          // Create and append the friend's name
+          const name = document.createElement("h2");
+          name.classList.add("friend-name");
+          name.textContent = friend.name;
+          card.appendChild(name);
+
+          // Append the completed card to the container
+          friendsContainer.appendChild(card);
+        });
+      }
+
+      // Function to show a friend's detail page
+      function showFriendDetail(friendId) {
+        const friend = friendsData.find((f) => f.id === friendId);
+        if (friend) {
+          detailImage.src = friend.image;
+          detailImage.alt = `Photo of ${friend.name}`;
+          // Fallback for broken images on detail page
+          detailImage.onerror = function () {
+            this.src = `https://placehold.co/250x250/cccccc/000000?text=No+Image`;
+            this.alt = `Image not available for ${friend.name}`;
+          };
+          detailFunnyTitle.textContent = friend.title;
+          detailName.textContent = friend.name;
+          detailStory.textContent = friend.story;
+
+          friendsContainer.style.display = "none"; // Hide main grid
+          friendDetailPage.style.display = "flex"; // Show detail page
+        }
+      }
+
+      // Function to hide the friend's detail page and show the main grid
+      function hideFriendDetail() {
+        friendDetailPage.style.display = "none"; // Hide detail page
+        friendsContainer.style.display = "grid"; // Show main grid
+      }
+
+      // Call the render function when the DOM is fully loaded
+      document.addEventListener("DOMContentLoaded", renderFriends);
+    </script>
+  </body>
+</html>
